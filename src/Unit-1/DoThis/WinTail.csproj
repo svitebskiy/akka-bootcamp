@@ -50,6 +50,9 @@
   <ItemGroup>
     <Compile Include="ConsoleReaderActor.cs" />
     <Compile Include="ConsoleWriterActor.cs" />
+    <Compile Include="Messages\ContinueProcessing.cs" />
+    <Compile Include="Messages\InputError.cs" />
+    <Compile Include="Messages\InputSuccess.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

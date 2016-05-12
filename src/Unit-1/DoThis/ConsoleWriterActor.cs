@@ -11,25 +11,31 @@ namespace WinTail
     {
         protected override void OnReceive(object message)
         {
-            var msg = message as string;
-
-            // make sure we got a message
-            if (string.IsNullOrEmpty(msg))
+            try
             {
-                Console.ForegroundColor = ConsoleColor.DarkYellow;
-                Console.WriteLine("Please provide an input.\n");
-                Console.ResetColor();
-                return;
+                if (message is Messages.InputSuccess)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine(((Messages.InputSuccess) message).Data);
+                }
+                else if (message is Messages.NullInputError)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    Console.WriteLine("Please provide an input.");
+                }
+                else if (message is Messages.InputError)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    Console.WriteLine("An error was reported. The reason is:");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(((Messages.InputError) message).Reason);
+                }
             }
-
-            // if message has even # characters, display in red; else, green
-            var even = msg.Length % 2 == 0;
-            var color = even ? ConsoleColor.Red : ConsoleColor.Green;
-            var alert = even ? "Your string had an even # of characters.\n" : "Your string had an odd # of characters.\n";
-            Console.ForegroundColor = color;
-            Console.WriteLine(alert);
-            Console.ResetColor();
-
+            finally
+            {
+                Console.ResetColor();
+                Console.WriteLine();
+            }
         }
     }
 }
