@@ -31,10 +31,12 @@ namespace WinTail
             var tailCoordinatorProps = Props.Create<TailCoordinatorActor>();
             var tailCoordinatorRef = MyActorSystem.ActorOf(tailCoordinatorProps, "tailCoordinator");
 
-            var vaildationProps = Props.Create(() => new FileValidationActor(writerRef, tailCoordinatorRef));
+            // "validation" actor gets a director referece to the writer actor instead of using Context.AcotrSelection()
+            // so that it can pass this IActorRef in a message to the TailActor.
+            var vaildationProps = Props.Create(() => new FileValidationActor(writerRef));
             var vaidatoinRef = MyActorSystem.ActorOf(vaildationProps, "validation");
 
-            var readerProps = Props.Create(() => new ConsoleReaderActor(vaidatoinRef));
+            var readerProps = Props.Create(() => new ConsoleReaderActor());
             var readerRef = MyActorSystem.ActorOf(readerProps, "reader");
 
             // tell console reader to begin
