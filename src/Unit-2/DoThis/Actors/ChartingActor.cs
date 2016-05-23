@@ -6,7 +6,7 @@ using Akka.Actor;
 
 namespace ChartApp.Actors
 {
-    public class ChartingActor : UntypedActor
+    public class ChartingActor : ReceiveActor
     {
         #region Messages
 
@@ -20,6 +20,16 @@ namespace ChartApp.Actors
             public Dictionary<string, Series> InitialSeries { get; private set; }
         }
 
+        public class AddSeries
+        {
+            public AddSeries(Series serz)
+            {
+                this.Series = serz;
+            }
+
+            public Series Series { get; private set; }
+        }
+
         #endregion
 
         private readonly Chart _chart;
@@ -27,21 +37,14 @@ namespace ChartApp.Actors
 
         public ChartingActor(Chart chart) : this(chart, new Dictionary<string, Series>())
         {
+            Receive<InitializeChart>(ic => HandleInitialize(ic));
+            Receive<AddSeries>(addSerz => HandleAddSeries(addSerz));
         }
 
         public ChartingActor(Chart chart, Dictionary<string, Series> seriesIndex)
         {
             _chart = chart;
             _seriesIndex = seriesIndex;
-        }
-
-        protected override void OnReceive(object message)
-        {
-            if (message is InitializeChart)
-            {
-                var ic = message as InitializeChart;
-                HandleInitialize(ic);
-            }
         }
 
         #region Individual Message Type Handlers
@@ -66,6 +69,17 @@ namespace ChartApp.Actors
                     series.Value.Name = series.Key;
                     _chart.Series.Add(series.Value);
                 }
+            }
+        }
+
+        private void HandleAddSeries(AddSeries addSerz)
+        {
+            var name = addSerz.Series.Name;
+
+            if (!string.IsNullOrEmpty(name) && !_seriesIndex.ContainsKey(name))
+            {
+                _seriesIndex.Add(name, addSerz.Series);
+                _chart.Series.Add(addSerz.Series);
             }
         }
 
