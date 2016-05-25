@@ -30,6 +30,57 @@ namespace ChartApp.Actors
             public Series Series { get; private set; }
         }
 
+        public class GetMetrics
+        {
+        }
+
+        public class Metric
+        {
+            public Metric(string series, float counterValue)
+            {
+                this.Series = series;
+                this.CounterValue = counterValue;
+            }
+
+            public string Series { get; private set; }
+            public float CounterValue { get; private set; }
+        }
+
+        #endregion
+
+        #region Performance Counter Management
+
+        public enum CounterType
+        {
+            Cpu,
+            Memory,
+            Disk
+        }
+
+        public class SubscriptCounter
+        {
+            public SubscriptCounter(CounterType counter, IActorRef subscriber)
+            {
+                this.Counter = counter;
+                this.Subscriber = subscriber;
+            }
+
+            public CounterType Counter { get; private set; }
+            public IActorRef Subscriber { get; private set; }
+        }
+
+        public class UnsubscriptCounter
+        {
+            public UnsubscriptCounter(CounterType counter, IActorRef subscriber)
+            {
+                this.Counter = counter;
+                this.Subscriber = subscriber;
+            }
+
+            public CounterType Counter { get; private set; }
+            public IActorRef Subscriber { get; private set; }
+        }
+
         #endregion
 
         private readonly Chart _chart;

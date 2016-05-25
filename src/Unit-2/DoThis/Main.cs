@@ -20,7 +20,6 @@ namespace ChartApp
 
         #region Initialization
 
-
         private void Main_Load(object sender, EventArgs e)
         {
             _chartActor = Program.ChartActors.ActorOf(Props.Create(() => new ChartingActor(sysChart)), "charting");
@@ -42,10 +41,19 @@ namespace ChartApp
 
         #endregion
 
-        private void addSeriesBtn_Click(object sender, EventArgs e)
+        private void cpuBtn_Click(object sender, EventArgs e)
         {
-            var serz = ChartDataHelper.RandomSeries("FakeSeries" + _seriesCounter.GetAndIncrement());
-            _chartActor.Tell(new ChartingActor.AddSeries(serz));
+
+        }
+
+        private void memoryBtn_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void diskBtn_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
