@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using Akka.Actor;
 
@@ -91,26 +92,50 @@ namespace ChartApp.Actors
             public IActorRef Subscriber { get; private set; }
         }
 
+        public class TogglePause { }
+
         #endregion
 
         private readonly Chart _chart;
         private Dictionary<string, Series> _seriesIndex;
+        private Button _pauseResumeBtn;
 
         public const int MaxPoints = 250;
         private int _xPosCounter = 0;
 
-        public ChartingActor(Chart chart) : this(chart, new Dictionary<string, Series>())
+        public ChartingActor(Chart chart, Button pauseResumeBtn) : this(chart, pauseResumeBtn, new Dictionary<string, Series>())
+        {
+            ChartingState();
+        }
+
+        private ChartingActor(Chart chart, Button pauseResumeBtn, Dictionary<string, Series> seriesIndex)
+        {
+            _chart = chart;
+            _seriesIndex = seriesIndex;
+            _pauseResumeBtn = pauseResumeBtn;
+        }
+
+        private void ChartingState()
         {
             Receive<InitializeChart>(ic => HandleInitialize(ic));
             Receive<AddSeries>(addSerz => HandleAddSeries(addSerz));
             Receive<RemoveSeries>(rmSerz => HandleRemoveSeries(rmSerz));
             Receive<Metric>(metric => HandleMetrics(metric));
+
+            Receive<TogglePause>(_ =>
+            {
+                SetPauseButtonText(true);
+                BecomeStacked(PausedState);
+            });
         }
 
-        public ChartingActor(Chart chart, Dictionary<string, Series> seriesIndex)
+        private void PausedState()
         {
-            _chart = chart;
-            _seriesIndex = seriesIndex;
+            Receive<TogglePause>(_ =>
+            {
+                SetPauseButtonText(false);
+                UnbecomeStacked();
+            });
         }
 
         #region Individual Message Type Handlers
@@ -224,6 +249,11 @@ namespace ChartApp.Actors
                 area.AxisY.Minimum = minAxisY;
                 area.AxisY.Maximum = maxAxisY;
             }
+        }
+
+        private void SetPauseButtonText(bool isPaused)
+        {
+            _pauseResumeBtn.Text = isPaused ? "Resume ->" : "Pause ||";
         }
     }
 }
