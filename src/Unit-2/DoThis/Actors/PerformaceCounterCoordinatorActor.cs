@@ -105,7 +105,6 @@ namespace ChartApp.Actors
             }
 
             counterActor.Tell(new ChartingActor.UnsubscriptCounter(unwatch.Counter, _chartingActor));
-
             _chartingActor.Tell(new ChartingActor.RemoveSeries(unwatch.Counter.ToString()));
         }
     }
